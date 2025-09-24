@@ -33,28 +33,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                  docker rm -f wp || true
-                  docker rm -f wpdb || true
-
-                  # Run MySQL (if not using external DB)
-                  docker run -d \
-                    --name wpdb \
-                    -e MYSQL_DATABASE=wpdb \
-                    -e MYSQL_USER=wpuser \
-                    -e MYSQL_PASSWORD=wppass \
-                    -e MYSQL_ROOT_PASSWORD=rootpass \
-                    mysql:8.0
-
-                  # Run WordPress container
-                  docker run -d \
-                    -p 8082:80 \
-                    --name wp \
-                    --link wpdb:mysql \
-                    -e WORDPRESS_DB_HOST=wpdb:3306 \
-                    -e WORDPRESS_DB_USER=wpuser \
-                    -e WORDPRESS_DB_PASSWORD=wppass \
-                    -e WORDPRESS_DB_NAME=wpdb \
-                    $DOCKER_IMAGE:$BUILD_NUMBER
+                    # Stop existing containers but keep volumes (persistent data)
+                    docker compose -f docker-compose.yml down || true
+          
+                    # Build (optional) and start all services in detached mode
+                    docker compose -f docker-compose.yml up -d --build
                 '''
             }
         }
