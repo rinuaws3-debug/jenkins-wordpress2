@@ -43,16 +43,12 @@ pipeline {
                 // sshagent(['ec2-ssh']) { ... }
 
                 sh '''
-                    echo "Deploying WordPress with Docker Compose..."
-
-                    # Stop existing containers but keep volumes (persistent data)
-                    docker compose -f docker-compose.yml down || true
-
-                    # Pull the latest image (ensures it’s up to date)
-                    docker compose -f docker-compose.yml pull
-
-                    # Start all services in detached mode
-                    docker compose -f docker-compose.yml up -d
+                ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
+                  cd /home/ubuntu/wordpress   # folder on EC2 where docker-compose.yml lives
+                  docker compose down || true
+                  docker compose pull
+                  docker compose up -d
+                '
                 '''
             }
         }
