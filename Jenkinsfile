@@ -42,11 +42,15 @@ pipeline {
                 // Wrap the SSH command in sshagent so Jenkins uses your EC2 private key
                 sshagent(['ec2-ssh']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
-                          cd /home/ubuntu/wordpress &&
-                          docker compose down || true &&
-                          docker compose pull &&
-                          docker compose up -d
+                         # Copy the docker-compose.yml from Jenkins workspace to EC2
+                         scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@13.232.101.128:/home/ubuntu/wordpress/docker-compose.yml
+
+                         # Run Docker Compose on EC2
+                         ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
+                           cd /home/ubuntu/wordpress &&
+                           docker compose down || true &&
+                           docker compose pull &&
+                           docker compose up -d
                         '
                     '''
                 }
