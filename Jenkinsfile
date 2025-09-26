@@ -40,7 +40,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 // If deploying to a remote EC2 instance, wrap in sshagent()
-                // sshagent(['ec2-ssh']) { ... }
+                sshagent(['ec2-ssh']) { ... }
 
                 sh '''
                 ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
