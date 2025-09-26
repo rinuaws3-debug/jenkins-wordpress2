@@ -39,17 +39,17 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // If deploying to a remote EC2 instance, wrap in sshagent()
-                sshagent(['ec2-ssh']) { ... }
-
-                sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
-                  cd /home/ubuntu/wordpress   # folder on EC2 where docker-compose.yml lives
-                  docker compose down || true
-                  docker compose pull
-                  docker compose up -d
-                '
-                '''
+                // Wrap the SSH command in sshagent so Jenkins uses your EC2 private key
+                sshagent(['ec2-ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
+                          cd /home/ubuntu/wordpress &&
+                          docker compose down || true &&
+                          docker compose pull &&
+                          docker compose up -d
+                        '
+                    '''
+                }
             }
         }
     }
