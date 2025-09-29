@@ -43,10 +43,10 @@ pipeline {
                 sshagent(['ec2-ssh']) {
                     sh '''
                          # Copy the docker-compose.yml from Jenkins workspace to EC2
-                         scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@13.232.101.128:/home/ubuntu/wordpress/docker-compose.yml
+                         scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@65.0.3.57:/home/ubuntu/wordpress/docker-compose.yml
 
                          # Run Docker Compose on EC2
-                         ssh -o StrictHostKeyChecking=no ubuntu@13.232.101.128 '
+                         ssh -o StrictHostKeyChecking=no ubuntu@65.0.3.57 '
                            cd /home/ubuntu/wordpress &&
                            docker compose down || true &&
                            docker compose pull &&
